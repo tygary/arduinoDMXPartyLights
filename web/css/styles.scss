@@ -1,0 +1,40 @@
+
+
+.homeScreen {
+    .currentProgram{
+
+    }
+}
+
+
+.programBuilder {
+    .programLayout {
+        .light {
+            .channelSelector {
+                display: inline-block;
+                width: 120px;
+                input {
+                    width: 40px;
+                }
+            }
+            .eventBox {
+                width: calc(100% - 150px);
+                height: 50px;
+                display: inline-block;
+                .eventDropArea {
+                    width: 100%;
+                    height: 100%;
+                }
+                .beat {
+                    display: inline-block;
+                    width: 80px;
+                    height: 100%;
+                    border-right: 1px solid black;
+                }
+                span {
+                    display: inline-block;
+                }
+            }
+        }
+    }
+}

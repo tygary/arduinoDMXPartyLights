@@ -1,0 +1,18 @@
+
+<div class="homeScreen">
+    <h1>The Home Screen</h1>
+
+    <a href="#program">Edit Program</a>
+
+    <div class="currentProgram">
+        <h2>Current Program</h2>
+        <input type="text" ng-model="currentProgram">
+    </div>
+
+
+    <button ng-if="!dmx.programIsRunning" ng-click="runTheProgram()">Start The Program</button>
+    <button ng-if="dmx.programIsRunning" ng-click="stopTheProgram()">Stop The Program</button>
+
+
+    <button ng-click="blackout()">Blackout Lights</button>
+</div>

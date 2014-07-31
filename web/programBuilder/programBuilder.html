@@ -1,0 +1,29 @@
+<div class="programBuilder">
+    <a href="#home">Home</a>
+
+
+    <h1>Edit a program</h1>
+    Tempo: <input type="number" ng-model="config.tempo">
+    Length In Beats: <input type="number" ng-model="config.lengthInBeats">
+
+     <div class="programLayout">
+         <div class="light" ng-repeat="light in config.lights">
+             <div class="channelSelector">Channel: <input type="number" ng-model="light.channel"></div>
+             <div class="eventBox">
+                 <div class="beat" ng-repeat="event in light.eventLoop track by $index">
+                     <div class="eventDropArea btn btn-droppable"
+                          data-drop="true"
+                          ng-model='light.eventLoop'
+                          jqyoui-droppable="{index: {{$index}}}">
+                         <div class="eventObj btn btn-info btn-draggable"
+                              ng-show="event.type"
+                              data-drag="true"
+                              data-jqyoui-options="{revert: 'invalid'}"
+                              ng-model="light.eventLoop"
+                              jqyoui-draggable="{index: {{$index}},placeholder:true,animate:true}">{{event.type}}</div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+</div>
