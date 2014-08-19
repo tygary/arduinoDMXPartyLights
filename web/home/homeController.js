@@ -1,7 +1,7 @@
 
 
-lightingControllers.controller('homeController', function($scope, dmxService) {
-
+lightingControllers.controller('homeController', function($scope, $rootScope, dmxService, $location) {
+    $scope.root = $rootScope;
     $scope.dmx = dmxService;
     $scope.runTheProgram = function () {
         dmxService.runProgram();
@@ -13,65 +13,38 @@ lightingControllers.controller('homeController', function($scope, dmxService) {
         dmxService.turnOffAllLights();
     };
 
-    $scope.editProgram = function(){
-        d
+    $scope.startPerformance = function () {
+        $location.path("/perform");
+    };
+
+    $scope.editProgram = function(program){
+        if (program) {
+            $rootScope.currentProgram = program;
+        }
+        $location.path("/program");
+    };
+
+    $scope.createNewProgram = function () {
+        $rootScope.currentProgram = {
+            id: null,
+            tempo: 120,
+            lengthInBeats: 8,
+            beatDetectionEnabled: false,
+            lights: []
+        };
+        $location.path("/program");
+    };
+
+    $scope.setAsCurrentProgram = function (program) {
+        $rootScope.currentProgram = program;
     };
 
 
-    $scope.currentProgram = JSON.stringify({
-        tempo: 120,
-        lengthInBeats: 8,
-        lights: [
-            {
-                channel: 1,
-                eventLoop: [
-                    {
-                        type: "fade",
-                        startValue: 0,
-                        endValue: 255,
-                        //duration: 2000
-                        durationInBeats: 4
-                    },
-                    null,
-                    null,
-                    null,
-                    {
-                        type: "fade",
-                        startValue: 255,
-                        endValue: 0,
-                        //duration: 2000
-                        durationInBeats: 4
-                    },
-                    null,
-                    null,
-                    null
-                ]
-            },
-            {
-                channel: 2,
-                eventLoop: [
-                    {
-                        type: "set",
-                        value: 255
-                    },
-                    {
-                        type: "set",
-                        value: 0
-                    },
-                    null,
-                    null,
-                    {
-                        type: "set",
-                        value: 255
-                    },
-                    {
-                        type: "set",
-                        value: 0
-                    },
-                    null,
-                    null
-                ]
-            }
-        ]
+    var watchDestructor = $rootScope.$watch("currentProgram", function () {
+        $scope.currentProgram = JSON.stringify($rootScope.currentProgram);
+    });
+
+    $scope.$on("$destroy", function () {
+        watchDestructor();
     });
 });

@@ -1,0 +1,26 @@
+<div class="performanceDashboard">
+    <div class="button exitButton" ng-click="goHome()">Exit Performance Mode</div>
+
+
+    <div class="inputContainer">
+        Tempo: <input id="tempo" type="number" ng-model="tempo">
+    </div>
+    <div class="inputContainer">
+        Beat Detection Enabled: <div class="checkboxContainer"><input id="beatDetection" type="checkbox" ng-model="beatDetection"></div>
+    </div>
+    <div class="controlButtons">
+        <div class="button startButton" ng-click="start()">Start</div>
+        <div class="button stopButton" ng-click="stop()">Stop</div>
+        <div class="button blackoutButton" ng-click="blackout()">Blackout Lights</div>
+    </div>
+
+    <div id="programContainer">
+        <div class="program"
+             ng-repeat="program in dmx.programList"
+             ng-click="activateProgram(program)"
+             ng-class="{active:program.id === currentProgram.id}">
+            <div class="programName">{{program.name}}</div>
+            <div class="numBeats">{{program.lengthInBeats}} Beats</div>
+        </div>
+    </div>
+</div>

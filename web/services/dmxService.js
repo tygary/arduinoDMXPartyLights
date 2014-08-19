@@ -1,13 +1,50 @@
-lightingServices.service('dmxService', function($http) {
+lightingServices.service('dmxService', function($http, $rootScope, $location) {
     delete $http.defaults.headers.common['X-Requested-With'];
     delete $http.defaults.headers.post['Content-type'];
     var dmxService = {
-        arduinoUrl: "http://127.0.0.1:8080",
+        arduinoUrl: "http://"+$location.host()+":8080",
         currentLights: [1, 2],
         programIsRunning: false
     };
 
-    dmxService.runProgram = function (program) {
+    dmxService.programList = {};
+
+    dmxService.getPrograms = function () {
+        postCommand("getPrograms", null, null, function (data){
+            dmxService.programList = data;
+            if (!$rootScope.currentProgram) {
+                for (var id in dmxService.programList) {
+                    $rootScope.currentProgram = dmxService.programList[id];
+                    break;
+                }
+            }
+        })
+    };
+
+    dmxService.saveProgram = function (program) {
+        postCommand("storeProgram", null, program, function () {
+            dmxService.getPrograms();
+        });
+
+    };
+
+    dmxService.deleteProgram = function (programId) {
+        postCommand("deleteProgram", null, {id:programId}, function () {
+            dmxService.getPrograms();
+        });
+    };
+
+    dmxService.runProgram = function (program, tempo, beatDetection) {
+        if (!program) {
+            program = $rootScope.currentProgram;
+        }
+        var params = [];
+        if (tempo) {
+            params.push({tempo:tempo});
+        }
+        if (beatDetection) {
+            params.push({beatDetection:beatDetection});
+        }
         postCommand("runProgram", null, program);
         dmxService.programIsRunning = true;
     };
@@ -16,10 +53,8 @@ lightingServices.service('dmxService', function($http) {
         dmxService.programIsRunning = false;
     };
     dmxService.turnOffAllLights = function (){
-        for (var i=0; i<dmxService.currentLights.length; i++) {
-            dmxService.setLight(dmxService.currentLights[i], 0);
-        }
-
+        postCommand("blackout");
+        dmxService.programIsRunning = false;
     };
     dmxService.setLight = function(channel, value) {
         postCommand("set", [
@@ -28,8 +63,20 @@ lightingServices.service('dmxService', function($http) {
         ]);
     };
 
+    dmxService.saveDefaults = function () {
+      window.confirm("Save current programs to defaults? THIS WILL ERASE OLD DEFAULTS...")
+      postCommand("saveDefaults");
+    };
 
-    function postCommand(command, params, data) {
+    dmxService.restoreDefaults = function () {
+        window.confirm("Restore programs to defaults? THIS WILL ERASE ANY UNSAVE PROGRAMS!")
+        postCommand("restoreDefaults", null, null, function(){
+            dmxService.getPrograms();
+        });
+    };
+
+
+    function postCommand(command, params, data, callback) {
         var paramsString = "";
         if (params && params.length > 0) {
             for (var i = 0; i < params.length; i++) {
@@ -37,11 +84,16 @@ lightingServices.service('dmxService', function($http) {
                 paramsString = paramsString.concat("&" + paramObj[0] + "=" + paramObj[1]);
             }
         }
-        $http.post(dmxService.arduinoUrl + "/" + command + "?" + paramsString, data, {
+        var promise = $http.post(dmxService.arduinoUrl + "/" + command + "?" + paramsString, data, {
             'Authorization': 'Basic dGVzdDp0ZXN0',
             contentType: "application/json"
         });
+        if (callback) {
+            promise.success(callback);
+        }
     }
+
+    dmxService.getPrograms();
 
     return dmxService;
 });

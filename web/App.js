@@ -14,6 +14,7 @@ lightingApp.config(['$routeProvider', function($routeProvider) {
         $routeProvider.
             when("/home", {templateUrl: "home/home.html", controller: "homeController"}).
             when("/program", {templateUrl: "programBuilder/programBuilder.html", controller: "programBuilderController"}).
+            when("/perform", {templateUrl: "performance/performanceDash.html", controller: "performanceController"}).
             otherwise({redirectTo: '/home'});
     }]);
 
@@ -44,3 +45,14 @@ function init() {
     document.addEventListener("touchend", touchHandler, true);
     document.addEventListener("touchcancel", touchHandler, true);
 }
+
+
+lightingApp.filter('range', function() {
+    return function(input, min, max) {
+        min = parseInt(min); //Make string input int
+        max = parseInt(max);
+        for (var i=min; i<max; i++)
+            input.push(i);
+        return input;
+    };
+});

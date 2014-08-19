@@ -1,67 +1,100 @@
 
 
-lightingControllers.controller('programBuilderController', function($scope) {
+lightingControllers.controller('programBuilderController', function($scope, $rootScope, $location, dmxService) {
 
-    $scope.config = {
-        tempo: 120,
-        lengthInBeats: 8,
-        lights: [
-            {
-                channel: 1,
-                eventLoop: [
-                    {
-                        type: "fade",
-                        startValue: 0,
-                        endValue: 255,
-                        //duration: 2000
-                        durationInBeats: 4
-                    },
-                    null,
-                    null,
-                    null,
-                    {
-                        type: "fade",
-                        startValue: 255,
-                        endValue: 0,
-                        //duration: 2000
-                        durationInBeats: 4
-                    },
-                    null,
-                    null,
-                    null
-                ]
-            },
-            {
-                channel: 2,
-                eventLoop: [
-                    {
-                        type: "set",
-                        value: 255
-                    },
-                    {
-                        type: "set",
-                        value: 0
-                    },
-                    null,
-                    null,
-                    {
-                        type: "set",
-                        value: 255
-                    },
-                    {
-                        type: "set",
-                        value: 0
-                    },
-                    null,
-                    null
-                ]
-            }
-        ]
+    $scope.saveProgram = function () {
+        dmxService.saveProgram($scope.config);
+        $rootScope.currentProgram = $scope.config;
+        $scope.goHome();
     };
 
+    $scope.deleteProgram = function () {
+        if ($scope.config.id) {
+            dmxService.deleteProgram($scope.config.id);
+        }
+        $scope.goHome();
+    };
+
+    $scope.runProgram = function () {
+        dmxService.runProgram($scope.config);
+    };
+
+    $scope.goHome = function () {
+        $location.path("/home");
+    };
+
+    $scope.newEvents = [
+        {
+            type: "set",
+            value: 255
+        },
+        {
+            type: "fade",
+            startValue: null,
+            endValue: 255,
+            durationInBeats: 1
+        },
+        {
+            type: "strobe",
+            intervalInBeats: null,
+            durationInBeats: null
+        }
+    ];
+
+    $scope.trash = [null];
+    $scope.clearTrash = function () {
+        $scope.trash = [null];
+    };
+
+    $scope.onChangeLengthInBeats = function () {
+        for(var i=0; i<$scope.config.lights.length; i++) {
+            var light = $scope.config.lights[i];
+            if (light.eventLoop.length > $scope.config.lengthInBeats) {
+                light.eventLoop.splice($scope.config.lengthInBeats, light.eventLoop.length - $scope.config.lengthInBeats);
+            } else if (light.eventLoop.length < $scope.config.lengthInBeats) {
+                for (var j=light.eventLoop.length; j< $scope.config.lengthInBeats; j++) {
+                    light.eventLoop[j] = null;
+                }
+            }
+        }
+    };
+
+    $scope.$watch("config.lengthInBeats", $scope.onChangeLengthInBeats);
+
+    $scope.removeChannel = function (lightIndex) {
+        $scope.config.lights.splice(lightIndex, 1);
+    };
+
+    $scope.addChannel = function () {
+        var newChannel = {
+            channel: 0,
+            eventLoop: []
+        };
+        for (var i=0; i<$scope.config.lengthInBeats; i++) {
+            newChannel.eventLoop.push(null);
+        }
+        $scope.config.lights.push(newChannel);
+    };
+
+    $scope.currentEvent = null;
+
+    $scope.onEventClick = function (event) {
+        //var event = $scope.config.lights[lightIndex].eventLoop[eventIndex];
+        $scope.currentEvent = event;
+    };
+
+    $scope.config = $rootScope.currentProgram;
+    var watchDestructor = $rootScope.$watch("currentProgram", function () {
+        $scope.config = $rootScope.currentProgram;
+    });
+
+    $scope.$on("$destroy", function () {
+        watchDestructor();
+    });
 
 
-
-
-
+    $scope.channelOptions = [];
+    for (var i=1; i< 255; i++){
+        $scope.channelOptions.push({name: i,value:i});
+    }
 });

@@ -1,29 +1,103 @@
 <div class="programBuilder">
-    <a href="#home">Home</a>
-
-
-    <h1>Edit a program</h1>
+    <div class="button homeButton" ng-click="goHome()">Go Back Home</div>
+    <div class="title">Edit a program</div>
+    <br/>
+    <div class="inputContainer">
+        Name: <input type="text" ng-model="config.name">
+    </div>
+    <div class="inputContainer">
     Tempo: <input type="number" ng-model="config.tempo">
-    Length In Beats: <input type="number" ng-model="config.lengthInBeats">
+    </div>
+    <br/>
+    <div class="inputContainer">
+        Beat Detection Enabled: <div class="checkboxContainer"><input type="checkbox" ng-model="config.beatDetectionEnabled"></div>
+    </div>
+    <div class="inputContainer">
+        Length In Beats: <div class="button incrementer" ng-click="config.lengthInBeats = config.lengthInBeats - 1">-</div><input type="number" ng-model="config.lengthInBeats"><div class="button incrementer" ng-click="config.lengthInBeats = config.lengthInBeats + 1">+</div>
+    </div>
 
+    <div class="eventToolbar">
+        <div class="newEventHolder">
+          <div class="eventDropArea btn btn-droppable" ng-repeat="newEvent in newEvents"
+               data-drop="true"
+               ng-model="newEvents"
+               jqyoui-droppable="{index: {{$index}}}">
+              <div class="eventObj btn btn-info btn-draggable"
+                   ng-show="newEvent.type"
+                   data-drag="true"
+                   data-jqyoui-options="{revert: 'invalid'}"
+                   ng-model="newEvents"
+                   jqyoui-draggable="{index: {{$index}},placeholder:'keep',animate:true}">
+                  New {{newEvent.type}}
+              </div>
+          </div>
+        </div>
+        <div class="button" ng-click="addChannel()">Add Channel</div>
+        <div ng-repeat="trashEvent in trash"
+             class="trash btn btn-droppable"
+             data-drop="true"
+             ng-model="trash"
+             jqyoui-droppable="{index: {{$index}}, onStop: clearTrash()}">
+            Trash
+            <div class="eventObj btn btn-info btn-draggable"
+                      ng-show="trashEvent.type"
+                      data-drag="true"
+                      data-jqyoui-options="{revert: 'invalid'}"
+                      ng-model="trash"
+                      jqyoui-draggable="{index: {{$index}}}">
+            </div>
+        </div>
+    </div>
      <div class="programLayout">
          <div class="light" ng-repeat="light in config.lights">
-             <div class="channelSelector">Channel: <input type="number" ng-model="light.channel"></div>
-             <div class="eventBox">
-                 <div class="beat" ng-repeat="event in light.eventLoop track by $index">
-                     <div class="eventDropArea btn btn-droppable"
+             <div class="channelSelector"><a ng-click="removeChannel($index)">X</a> Channel: <select ng-model="light.channel" ng-options="n for n in [] | range:1:30"></select></div>
+             <div class="beat" ng-repeat="event in light.eventLoop track by $index">
+                 <div class="eventDropArea btn btn-droppable"
                           data-drop="true"
                           ng-model='light.eventLoop'
                           jqyoui-droppable="{index: {{$index}}}">
-                         <div class="eventObj btn btn-info btn-draggable"
-                              ng-show="event.type"
-                              data-drag="true"
-                              data-jqyoui-options="{revert: 'invalid'}"
-                              ng-model="light.eventLoop"
-                              jqyoui-draggable="{index: {{$index}},placeholder:true,animate:true}">{{event.type}}</div>
+                     <div class="eventObj btn btn-info btn-draggable"
+                          ng-click="onEventClick(event)"
+                          ng-show="event.type"
+                          data-drag="true"
+                          data-jqyoui-options="{revert: 'invalid'}"
+                          ng-model="light.eventLoop"
+                          jqyoui-draggable="{index: {{$index}},placeholder:true,animate:true}">
+                        <span ng-switch="event.type">
+                            <span ng-switch-when="fade">Fade to {{event.endValue}}</span>
+                            <span ng-switch-when="set">Set to {{event.value}}</span>
+                            <span ng-switch-when="strobe">Strobe</span>
+                        </span>
+
                      </div>
                  </div>
              </div>
          </div>
      </div>
+    <div ng-if="currentEvent">
+        <div ng-switch="currentEvent.type">
+            <ul ng-switch-when="fade">
+                <li>Type: {{currentEvent.type}}</li>
+                <li>Start Value: <input type="number" ng-model="currentEvent.startValue"></li>
+                <li>End Value: <input type="number" ng-model="currentEvent.endValue"></li>
+                <li>Duration In Beats: <input type="number" ng-model="currentEvent.durationInBeats"></li>
+            </ul>
+            <ul ng-switch-when="set">
+                <li>Type: {{currentEvent.type}}</li>
+                <li>Value: <input type="number" ng-model="currentEvent.value"></li>
+            </ul>
+            <ul ng-switch-when="strobe">
+                <li>Type: {{currentEvent.type}}</li>
+                <li>Interval In Beats: <input type="number" ng-model="currentEvent.intervalInBeats"></li>
+                <li>Duration In Beats: <input type="number" ng-model="currentEvent.durationInBeats"></li>
+            </ul>
+        </div>
+
+    </div>
+    <div class="bottomButtonContainer">
+        <div class="button right" ng-click="runProgram()">Run The Program</div>
+        <div class="button right" ng-click="saveProgram()">Save Program</div>
+        <div class="button left" ng-click="deleteProgram()">Delete Program</div>
+        <div style="clear:both;"></div>
+    </div>
 </div>

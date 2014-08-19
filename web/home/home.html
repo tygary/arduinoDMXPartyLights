@@ -1,18 +1,24 @@
 
 <div class="homeScreen">
     <h1>The Home Screen</h1>
+    <div class="button performButton" ng-click="startPerformance()">Start Performance Mode</div>
 
-    <a href="#program">Edit Program</a>
 
-    <div class="currentProgram">
-        <h2>Current Program</h2>
-        <input type="text" ng-model="currentProgram">
+    <div class="button editButton" ng-click="editProgram()">Edit Program</div>
+    <div class="button newButton" ng-click="createNewProgram()">New Program</div>
+
+
+    <div class="button startButton" ng-click="runTheProgram()">Start The Program</div>
+    <div class="button stopButton"  ng-click="stopTheProgram()">Stop The Program</div>
+    <div class="button" ng-click="dmx.saveDefaults()">Save To Defaults</div>
+    <div class="button"  ng-click="dmx.restoreDefaults()">Restore Defaults</div>
+
+    <div class="button blackoutButton" ng-click="blackout()">Blackout Lights</div>
+
+    <div class="programList">
+        <div class="program" ng-class="{active: root.currentProgram.id == id}" ng-repeat="(id, program) in dmx.programList" ng-click="setAsCurrentProgram(program)" ng-dblclick="editProgram(program)">
+            {{program.name}}
+        </div>
+
     </div>
-
-
-    <button ng-if="!dmx.programIsRunning" ng-click="runTheProgram()">Start The Program</button>
-    <button ng-if="dmx.programIsRunning" ng-click="stopTheProgram()">Stop The Program</button>
-
-
-    <button ng-click="blackout()">Blackout Lights</button>
 </div>

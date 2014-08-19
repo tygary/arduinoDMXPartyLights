@@ -1,19 +1,161 @@
-.programBuilder .programLayout .light .channelSelector {
+body {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  color: #ffe1bd; }
+
+input {
+  background: #178e6d;
+  border: black 1px solid; }
+
+.checkboxContainer {
+  position: relative;
   display: inline-block;
-  width: 120px; }
-  .programBuilder .programLayout .light .channelSelector input {
-    width: 40px; }
-.programBuilder .programLayout .light .eventBox {
-  width: calc(100% - 150px);
-  height: 50px;
-  display: inline-block; }
-  .programBuilder .programLayout .light .eventBox .eventDropArea {
-    width: 100%;
-    height: 100%; }
-  .programBuilder .programLayout .light .eventBox .beat {
+  width: 30px;
+  height: 20px;
+  vertical-align: middle; }
+  .checkboxContainer input[type="checkbox"] {
+    position: absolute;
+    top: -6px;
+    left: 4px;
+    margin: 0px; }
+
+input[type="checkbox"] {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin: -1px 4px 0 0;
+  vertical-align: middle;
+  cursor: pointer; }
+
+select {
+  background: #178e6d; }
+
+.homeScreen {
+  background: #393939;
+  width: 100%;
+  height: 100%; }
+  .homeScreen .programList .program {
     display: inline-block;
-    width: 80px;
-    height: 100%;
-    border-right: 1px solid black; }
-  .programBuilder .programLayout .light .eventBox span {
-    display: inline-block; }
+    width: 100px;
+    height: 100px;
+    border: 1px black solid;
+    margin: 10px; }
+  .homeScreen .programList .program.selected {
+    background: #d3d3d3; }
+
+.programBuilder {
+  background: #393939;
+  width: 100%;
+  height: 100%; }
+  .programBuilder .homeButton {
+    margin: 10px 5px; }
+  .programBuilder .title {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    margin-left: -100px;
+    font-size: 30px; }
+  .programBuilder .eventToolbar .newEventHolder {
+    display: inline-block;
+    background: #178e6d;
+    margin: 5px; }
+  .programBuilder .eventToolbar .trash {
+    background: #c36238;
+    float: right;
+    width: 150px;
+    height: 50px;
+    line-height: 37px;
+    vertical-align: middle; }
+  .programBuilder .eventToolbar .trash:hover {
+    background: #c3140d; }
+  .programBuilder .programLayout {
+    clear: both;
+    display: table; }
+    .programBuilder .programLayout .light {
+      display: table-row; }
+      .programBuilder .programLayout .light .channelSelector {
+        height: 50px;
+        vertical-align: middle;
+        display: table-cell;
+        min-width: 120px; }
+        .programBuilder .programLayout .light .channelSelector input {
+          width: 40px; }
+      .programBuilder .programLayout .light .eventDropArea {
+        width: 100%;
+        height: 50px; }
+      .programBuilder .programLayout .light .beat {
+        display: table-cell;
+        height: 50px;
+        vertical-align: middle;
+        min-width: 80px;
+        border-right: 1px solid black; }
+      .programBuilder .programLayout .light span {
+        display: inline-block; }
+  .programBuilder .bottomButtonContainer div {
+    margin: 10px 5px; }
+  .programBuilder .bottomButtonContainer div.left {
+    float: left; }
+  .programBuilder .bottomButtonContainer div.right {
+    float: right; }
+
+.button {
+  display: inline-block;
+  border: 1px black solid;
+  padding: 4px;
+  cursor: pointer;
+  background: #cc8c1d; }
+
+.button:hover {
+  background: #dfaf2f; }
+
+.button:active {
+  background: #dfaf2f; }
+
+#programContainer {
+  clear: both; }
+
+.program {
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+  padding: 5px;
+  margin: 15px;
+  background: #998562;
+  vertical-align: top;
+  cursor: pointer; }
+  .program .programName {
+    height: 120px; }
+  .program .numBeats {
+    height: 20px; }
+
+.program.active {
+  background: #ff853d; }
+
+.program.active:hover {
+  background: #ff853d; }
+
+.program:hover {
+  background: #c36238; }
+
+.program:active {
+  background: #c36238; }
+
+.inputContainer {
+  display: inline-block;
+  background: #998562;
+  padding: 5px;
+  margin: 5px; }
+  .inputContainer #tempo {
+    width: 50px; }
+
+.performanceDashboard {
+  background: #393939;
+  width: 100%;
+  height: 100%; }
+  .performanceDashboard .controlButtons {
+    float: right; }
+    .performanceDashboard .controlButtons div {
+      margin: 10px 5px; }
