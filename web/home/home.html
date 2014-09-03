@@ -10,8 +10,7 @@
 
     <div class="button startButton" ng-click="runTheProgram()">Start The Program</div>
     <div class="button stopButton"  ng-click="stopTheProgram()">Stop The Program</div>
-    <div class="button" ng-click="dmx.saveDefaults()">Save To Defaults</div>
-    <div class="button"  ng-click="dmx.restoreDefaults()">Restore Defaults</div>
+
 
     <div class="button blackoutButton" ng-click="blackout()">Blackout Lights</div>
 
@@ -20,5 +19,13 @@
             {{program.name}}
         </div>
 
+    </div>
+
+    <div class="button" ng-click="dmx.saveDefaults()">Save To Defaults</div>
+    <div class="button" ng-click="dmx.restoreDefaults()">Restore Defaults</div>
+    <div class="button" ng-click="showThreshold = !showThreshold; threshold = dmx.threshold">Toggle Show Threshold</div>
+    <div ng-if="showThreshold">
+        Threshold: <input type="number" min="0" max="1024" ng-model="threshold">
+        <div class="button" ng-click="dmx.updateThreshold(threshold)">Update Threshold</div>
     </div>
 </div>

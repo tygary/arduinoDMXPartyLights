@@ -93,14 +93,16 @@ void handleAsync() {
 }
 int incomingAudio;
 
+int threshold = 650;
+
 void loop() {
 
   sensorValue = analogRead(A0);
   unsigned long now = millis();
-  if (sensorValue > newHigh && sensorValue > 500) {
+  if (sensorValue > newHigh && sensorValue > threshold) {
     newHigh = sensorValue * variance;
     counter = 0;
-    if (now > (lastBeatTime + 150)) {
+    if (now > (lastBeatTime + 140)) {
       Serial.println(sensorValue);
       lastBeatTime = now;
       uint8_t line_buf[15] = "|Beat|";
@@ -262,7 +264,12 @@ void loop() {
         for(int i=1; i<255; i++) {
           DmxMaster.write(i, 0);       
         }  
+      } else if (input.startsWith("dmx:thresh:")) {
+        input = input.substring(input.indexOf("dmx:thresh:") + 11);
+        int seperator = input.indexOf(":");
+        threshold = input.substring(0, seperator).toInt();
       }
+     
       input = input.substring(input.indexOf("|") + 1);
     }
   }

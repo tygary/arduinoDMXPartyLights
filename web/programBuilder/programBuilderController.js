@@ -16,7 +16,10 @@ lightingControllers.controller('programBuilderController', function($scope, $roo
     };
 
     $scope.runProgram = function () {
-        dmxService.runProgram($scope.config);
+        dmxService.saveProgram($scope.config).then(function (id){
+            $scope.config.id = id;
+            dmxService.runProgram($scope.config);
+        });
     };
 
     $scope.goHome = function () {
@@ -30,14 +33,14 @@ lightingControllers.controller('programBuilderController', function($scope, $roo
         },
         {
             type: "fade",
-            startValue: null,
+            startValue: 0,
             endValue: 255,
             durationInBeats: 1
         },
         {
             type: "strobe",
-            intervalInBeats: null,
-            durationInBeats: null
+            intervalInBeats: 1,
+            durationInBeats: 1
         }
     ];
 
@@ -47,13 +50,15 @@ lightingControllers.controller('programBuilderController', function($scope, $roo
     };
 
     $scope.onChangeLengthInBeats = function () {
-        for(var i=0; i<$scope.config.lights.length; i++) {
-            var light = $scope.config.lights[i];
-            if (light.eventLoop.length > $scope.config.lengthInBeats) {
-                light.eventLoop.splice($scope.config.lengthInBeats, light.eventLoop.length - $scope.config.lengthInBeats);
-            } else if (light.eventLoop.length < $scope.config.lengthInBeats) {
-                for (var j=light.eventLoop.length; j< $scope.config.lengthInBeats; j++) {
-                    light.eventLoop[j] = null;
+        if ($scope.config && $scope.config.lights) {
+            for(var i=0; i<$scope.config.lights.length; i++) {
+                var light = $scope.config.lights[i];
+                if (light.eventLoop.length > $scope.config.lengthInBeats) {
+                    light.eventLoop.splice($scope.config.lengthInBeats, light.eventLoop.length - $scope.config.lengthInBeats);
+                } else if (light.eventLoop.length < $scope.config.lengthInBeats) {
+                    for (var j=light.eventLoop.length; j< $scope.config.lengthInBeats; j++) {
+                        light.eventLoop[j] = null;
+                    }
                 }
             }
         }

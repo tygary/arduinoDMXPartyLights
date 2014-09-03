@@ -90,6 +90,18 @@ select {
         font-size: 30px;
     }
 
+    .tempoRangeSelector {
+        width: 200px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .beatRangeSelector {
+        width: 200px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
     .eventToolbar {
         .newEventHolder {
             display: inline-block;
@@ -140,6 +152,14 @@ select {
                 display: inline-block;
             }
         }
+    }
+
+    .eventEditorBox {
+        width: 600px;
+        margin: 20px;
+        padding: 10px;
+        background: $darkLife;
+
     }
 
     .bottomButtonContainer {

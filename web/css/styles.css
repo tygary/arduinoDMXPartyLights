@@ -58,6 +58,14 @@ select {
     left: 50%;
     margin-left: -100px;
     font-size: 30px; }
+  .programBuilder .tempoRangeSelector {
+    width: 200px;
+    display: inline-block;
+    vertical-align: middle; }
+  .programBuilder .beatRangeSelector {
+    width: 200px;
+    display: inline-block;
+    vertical-align: middle; }
   .programBuilder .eventToolbar .newEventHolder {
     display: inline-block;
     background: #178e6d;
@@ -94,6 +102,11 @@ select {
         border-right: 1px solid black; }
       .programBuilder .programLayout .light span {
         display: inline-block; }
+  .programBuilder .eventEditorBox {
+    width: 600px;
+    margin: 20px;
+    padding: 10px;
+    background: #178e6d; }
   .programBuilder .bottomButtonContainer div {
     margin: 10px 5px; }
   .programBuilder .bottomButtonContainer div.left {

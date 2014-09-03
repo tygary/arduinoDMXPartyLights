@@ -1,4 +1,4 @@
-lightingServices.service('dmxService', function($http, $rootScope, $location) {
+lightingServices.service('dmxService', function($http, $rootScope, $location, $q) {
     delete $http.defaults.headers.common['X-Requested-With'];
     delete $http.defaults.headers.post['Content-type'];
     var dmxService = {
@@ -22,10 +22,12 @@ lightingServices.service('dmxService', function($http, $rootScope, $location) {
     };
 
     dmxService.saveProgram = function (program) {
-        postCommand("storeProgram", null, program, function () {
+        var deferred = $q.defer();
+        postCommand("storeProgram", null, program, function (id) {
             dmxService.getPrograms();
+            deferred.resolve(id.id);
         });
-
+        return deferred.promise;;
     };
 
     dmxService.deleteProgram = function (programId) {
@@ -40,12 +42,12 @@ lightingServices.service('dmxService', function($http, $rootScope, $location) {
         }
         var params = [];
         if (tempo) {
-            params.push({tempo:tempo});
+            params.push(["tempo",tempo]);
         }
-        if (beatDetection) {
-            params.push({beatDetection:beatDetection});
+        if (beatDetection != null && beatDetection != undefined) {
+            params.push(["beatDetection",beatDetection]);
         }
-        postCommand("runProgram", null, program);
+        postCommand("runProgram", params, program);
         dmxService.programIsRunning = true;
     };
     dmxService.stopProgram = function () {
@@ -62,6 +64,17 @@ lightingServices.service('dmxService', function($http, $rootScope, $location) {
             ["value", value]
         ]);
     };
+
+    dmxService.updateThreshold = function (threshold) {
+      dmxService.threshold = threshold;
+      postCommand("setThreshold", [["value", threshold]]);
+    };
+
+    dmxService.getThreshold = function () {
+        postCommand("getThreshold", null, null, function(data) {
+            dmxService.threshold = data.threshold;
+        })
+    }
 
     dmxService.saveDefaults = function () {
       window.confirm("Save current programs to defaults? THIS WILL ERASE OLD DEFAULTS...")
@@ -94,6 +107,7 @@ lightingServices.service('dmxService', function($http, $rootScope, $location) {
     }
 
     dmxService.getPrograms();
+    dmxService.getThreshold();
 
     return dmxService;
 });

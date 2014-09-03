@@ -138,6 +138,10 @@ function processCommand(request, response, data) {
         if (tempo > 0) {
             currentProgram.tempo = tempo;
         }
+        var beatDetection = urlStrings.beatDetection;
+        if (beatDetection != null && beatDetection != undefined) {
+            currentProgram.beatDetectionEnabled = (beatDetection == "true");
+        }
         runProgram(currentProgram);
     } else if (command == "/stopProgram") {
         stopProgram();
@@ -145,7 +149,7 @@ function processCommand(request, response, data) {
         if (data) {
             newProgram = JSON.parse(data);
             id=storeProgram(newProgram);
-            return id;
+            return JSON.stringify({id:id});
         }
     } else if (command == "/getPrograms") {
         return JSON.stringify(programList);
@@ -168,6 +172,20 @@ function processCommand(request, response, data) {
         saveDefaults();
     } else if (command == "/restoreDefaults") {
         restoreDefaults();
+    } else if (command == "/setThreshold") {
+        setThreshold(urlStrings.value);
+        return JSON.stringify({threshold: threshold});
+    } else if (command == "/getThreshold") {
+        return JSON.stringify({threshold: threshold});
+    }
+}
+
+var threshold = 650;
+function setThreshold(value) {
+    value = parseInt(value);
+    if (typeof value === "number" && value > 0) {
+        threshold = value;
+        console.log("|dmx:thresh:"+ value +"|");
     }
 }
 
