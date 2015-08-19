@@ -1,3 +1,28 @@
+/*
+ Disco Ball DMX Protocol
+
+ Ch1
+ 0-70    automatic
+ 71-140  Sound Control
+ 141-210 DMX512 Control  (CH 2-5)
+ 211-255 Start DMX (Ch 6)
+
+ Ch2
+ 0-255   Green Light brightness
+
+ Ch3
+ 0-255   Blue Light brightness
+
+ Ch4
+ 0-255   Red Light Brightness
+
+ Ch5
+ 0-255   Rotation Speed adjustment (0->stop)
+
+ Ch6
+ 0-255   Flash Speed adjustment
+ */
+
 
 var Executor = module.exports = function Executor() {
     var executor = this;
@@ -6,6 +31,54 @@ var Executor = module.exports = function Executor() {
     executor.threshold = 650;
 
     return executor;
+};
+
+Executor.prototype.runLight = function (light, beat, tempo) {
+    var executor = this;
+    if (light != null && typeof light === "object") {
+        if (light.type === "dimmer") {
+            executor.executeCommand(light.eventLoop[beat - 1], light.channel, tempo);
+        } else if (light.type === "disco" && light.mode === "manual") {
+            if (beat === 1) {
+                var modeValue = 0;
+                if (light.mode === "manual") {
+                    modeValue = 141;
+                } else if (light.mode === "auto") {
+                    modeValue = 0;
+                } else if (light.mode === "sound") {
+                    modeValue = 71;
+                }
+
+                executor.executeCommand({
+                    type: "set",
+                    value: modeValue
+                }, light.channel, tempo)
+            }
+
+            executor.executeDiscoCommand(light.greenLoop[beat - 1], light.channel + 1, tempo);
+            executor.executeDiscoCommand(light.blueLoop[beat - 1], light.channel + 2, tempo);
+            executor.executeDiscoCommand(light.redLoop[beat - 1], light.channel + 3, tempo);
+            if (light.eventLoop) {
+                executor.executeDiscoCommand(light.eventLoop[beat - 1], light.channel + 4, tempo); //Rotation Speed
+            }
+        }
+    }
+};
+
+Executor.prototype.executeDiscoCommand = function (command, channel, tempo) {
+  var executor = this;
+    if (command != null && typeof command === "object") {
+        if (command.value > 237) {
+            command.value = 237;
+        }
+        if (command.startValue > 237) {
+            command.startValue = 237;
+        }
+        if (command.endValue > 237) {
+            command.endValue = 237;
+        }
+        executor.executeCommand(command, channel, tempo);
+    }
 };
 
 Executor.prototype.executeCommand = function (command, channel, tempo) {

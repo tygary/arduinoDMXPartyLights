@@ -11,20 +11,33 @@ var backupService = new BackupService();
 var ProgramControl = module.exports = function ProgramControl() {
     var programControl = this;
 
-    backupService.restoreProgramList();
-
-    var progCount = 0;
-    for (var id in backupService.programList) {
-        if (backupService.programList.hasOwnProperty(id)) {
-            progCount++;
+    function startTheDefaultProgram() {
+        if (backupService.programList["default"]) {
+            programControl.currentProgram = backupService.programList["default"];
+        } else {
+            programControl.currentProgram = new Program();
         }
+        programControl.runProgram(programControl.currentProgram);
     }
-    if (progCount == 0) {
-        backupService.restoreDefaults();
-    }
+
+    backupService.restoreProgramList().then(function () {
+        var progCount = 0;
+        for (var id in backupService.programList) {
+            if (backupService.programList.hasOwnProperty(id)) {
+                progCount++;
+            }
+        }
+
+        if (progCount == 0) {
+            backupService.restoreDefaults().then(function(){
+                startTheDefaultProgram();
+            });
+        } else {
+            startTheDefaultProgram();
+        }
+    });
 
     programControl.programIsRunning = false;
-    programControl.currentProgram = new Program();
     programControl.runningProgramUID = null;
     programControl.nextBeatCallback = null;
 
@@ -32,13 +45,20 @@ var ProgramControl = module.exports = function ProgramControl() {
 };
 
 
-ProgramControl.prototype.storeProgram = function(newProgram) {
-    if (!newProgram.id) {
-        newProgram.id = shortId.generate();
+ProgramControl.prototype.storeProgram = function(newProgram, storeAsDefaultProgram) {
+    var id = newProgram.id;
+    if (storeAsDefaultProgram) {
+        id = "default";
     }
-    backupService.programList[newProgram.id] = newProgram;
+    if (!id) {
+        id = shortId.generate();
+        newProgram.id = id;
+    }
+    backupService.programList[id] = newProgram;
 
-    setTimeout(backupService.backupProgramList, 10);
+    setTimeout(function(){
+        backupService.backupProgramList();
+    }, 10);
     return newProgram.id;
 };
 
@@ -66,11 +86,11 @@ ProgramControl.prototype.processCommand = function (request, response, data) {
             try {
                 newProgram = JSON.parse(data);
                 if (typeof newProgram == "object") {
-                    id = backupService.storeProgram(newProgram);
+                    id = programControl.storeProgram(newProgram);
                 } else {
                     id = data;
                 }
-                programControl.currentProgram = backupService.sto[id];
+                programControl.currentProgram = backupService.programList[id];
                 global.logIt("loaded new Program");
             } catch (e) {
                 global.logIt("Error Parsing Program" + e);
@@ -122,6 +142,12 @@ ProgramControl.prototype.processCommand = function (request, response, data) {
         return JSON.stringify({threshold: executor.threshold});
     } else if (command == "/getThreshold") {
         return JSON.stringify({threshold: executor.threshold});
+    } else if (command == "/setAsDefaultProgram") {
+        if (data) {
+            newProgram = JSON.parse(data);
+            id = programControl.storeProgram(newProgram, true);
+            return JSON.stringify({id:id});
+        }
     }
 };
 
@@ -146,7 +172,7 @@ ProgramControl.prototype.executeProgram = function(beat, currentProgramUID) {
     if (programControl.programIsRunning && programControl.currentProgram && currentProgramUID == programControl.runningProgramUID) {
         global.logIt(beat);
         for (var i = 0; i < programControl.currentProgram.lights.length; i++) {
-            executor.executeCommand(programControl.currentProgram.lights[i].eventLoop[beat - 1], programControl.currentProgram.lights[i].channel, programControl.currentProgram.tempo);
+            executor.runLight(programControl.currentProgram.lights[i], beat, programControl.currentProgram.tempo);
         }
         if(programControl.currentProgram.beatDetectionEnabled) {
             programControl.nextBeatCallback = function () {
@@ -155,7 +181,7 @@ ProgramControl.prototype.executeProgram = function(beat, currentProgramUID) {
         } else {
             setTimeout(function () {
                 programControl.executeProgram(((beat) % programControl.currentProgram.lengthInBeats) + 1, currentProgramUID);
-            }, executor.getCurrentBeatDuration());
+            }, executor.getCurrentBeatDuration(programControl.currentProgram.tempo));
         }
     }
 };

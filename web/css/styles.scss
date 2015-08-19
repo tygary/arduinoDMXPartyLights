@@ -10,6 +10,8 @@ $darkLife: #178E6D;
 $darkHeat: #c36238;
 $lightClay: #dfaf2f;
 
+@import "../bower_components/bootstrap/dist/css/bootstrap.min.css";
+
 body {
     position: absolute;
     left: 0;
@@ -40,7 +42,7 @@ input {
     }
 }
 input[type="checkbox"] {
-    @extend .regular-checkbox;
+    //@extend .regular-checkbox;
     display:inline-block;
     width:30px;
     height:30px;
@@ -121,6 +123,10 @@ select {
         }
     }
 
+    .programContainer {
+        width: 100%;
+        overflow-x: auto;
+    }
 
     .programLayout {
         clear: both;

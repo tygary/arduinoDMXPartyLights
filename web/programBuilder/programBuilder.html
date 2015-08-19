@@ -48,32 +48,115 @@
             </div>
         </div>
     </div>
-     <div class="programLayout">
-         <div class="light" ng-repeat="light in config.lights">
-             <div class="channelSelector"><a ng-click="removeChannel($index)">X</a> Channel: <select ng-model="light.channel" ng-options="n for n in [] | range:1:30"></select></div>
-             <div class="beat" ng-repeat="event in light.eventLoop track by $index">
-                 <div class="eventDropArea btn btn-droppable"
-                          data-drop="true"
-                          ng-model='light.eventLoop'
-                          jqyoui-droppable="{index: {{$index}}}">
-                     <div class="eventObj btn btn-info btn-draggable"
-                          ng-click="onEventClick(event)"
-                          ng-show="event.type"
-                          data-drag="true"
-                          data-jqyoui-options="{revert: 'invalid'}"
-                          ng-model="light.eventLoop"
-                          jqyoui-draggable="{index: {{$index}},placeholder:true,animate:true}">
+    <div class="programContainer">
+        <table class="programLayout">
+            <tr class="light" ng-repeat-start="light in config.lights">
+                <td class="channelSelector">
+                    <a ng-click="removeChannel($index)">X</a> Channel: <select ng-model="light.channel" ng-options="n for n in [] | range:1:30"></select>
+                    <div class="lightTypeSelector"><select ng-model="light.type" ng-options="type.value as type.name for type in lightTypes" ng-change="onChangeLightType(light)"></select></div>
+                    <div class="lightTypeSelector" ng-if="light.type === 'disco'"><select ng-model="light.mode" ng-options="mode.value as mode.name for mode in discoModes"></select></div>
+                    <div ng-if="light.type === 'disco'">Set Rotation Speed:</div>
+                </td>
+                <td class="beat" ng-repeat="event in light.eventLoop track by $index">
+                    <div class="eventDropArea btn btn-droppable"
+                         data-drop="true"
+                         ng-model='light.eventLoop'
+                         jqyoui-droppable="{index: {{$index}}}">
+                        <div class="eventObj btn btn-info btn-draggable"
+                             ng-click="onEventClick(event)"
+                             ng-show="event.type"
+                             data-drag="true"
+                             data-jqyoui-options="{revert: 'invalid'}"
+                             ng-model="light.eventLoop"
+                             jqyoui-draggable="{index: {{$index}},placeholder:true,animate:true}">
                         <span ng-switch="event.type">
                             <span ng-switch-when="fade">Fade to {{event.endValue}}</span>
                             <span ng-switch-when="set">Set to {{event.value}}</span>
                             <span ng-switch-when="strobe">Strobe</span>
                         </span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="light" ng-if="light.type === 'disco' && light.mode === 'manual'">
+                <td class="channelSelector">
+                    Red Lights:
+                </td>
+                <td class="beat" ng-repeat="event in light.redLoop track by $index">
+                    <div class="eventDropArea btn btn-droppable"
+                         data-drop="true"
+                         ng-model='light.redLoop'
+                         jqyoui-droppable="{index: {{$index}}}">
+                        <div class="eventObj btn btn-info btn-draggable"
+                             ng-click="onEventClick(event)"
+                             ng-show="event.type"
+                             data-drag="true"
+                             data-jqyoui-options="{revert: 'invalid'}"
+                             ng-model="light.redLoop"
+                             jqyoui-draggable="{index: {{$index}},placeholder:true,animate:true}">
+                        <span ng-switch="event.type">
+                            <span ng-switch-when="fade">Fade to {{event.endValue}}</span>
+                            <span ng-switch-when="set">Set to {{event.value}}</span>
+                            <span ng-switch-when="strobe">Strobe</span>
+                        </span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="light" ng-if="light.type === 'disco' && light.mode === 'manual'">
+                <td class="channelSelector">
+                    Green Lights:
+                </td>
+                <td class="beat" ng-repeat="event in light.greenLoop track by $index">
+                    <div class="eventDropArea btn btn-droppable"
+                         data-drop="true"
+                         ng-model='light.greenLoop'
+                         jqyoui-droppable="{index: {{$index}}}">
+                        <div class="eventObj btn btn-info btn-draggable"
+                             ng-click="onEventClick(event)"
+                             ng-show="event.type"
+                             data-drag="true"
+                             data-jqyoui-options="{revert: 'invalid'}"
+                             ng-model="light.greenLoop"
+                             jqyoui-draggable="{index: {{$index}},placeholder:true,animate:true}">
+                    <span ng-switch="event.type">
+                        <span ng-switch-when="fade">Fade to {{event.endValue}}</span>
+                        <span ng-switch-when="set">Set to {{event.value}}</span>
+                        <span ng-switch-when="strobe">Strobe</span>
+                    </span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="light" ng-if="light.type === 'disco' && light.mode === 'manual'">
+                <td class="channelSelector">
+                    Blue Lights:
+                </td>
+                <td class="beat" ng-repeat="event in light.blueLoop track by $index">
+                    <div class="eventDropArea btn btn-droppable"
+                         data-drop="true"
+                         ng-model='light.blueLoop'
+                         jqyoui-droppable="{index: {{$index}}}">
+                        <div class="eventObj btn btn-info btn-draggable"
+                             ng-click="onEventClick(event)"
+                             ng-show="event.type"
+                             data-drag="true"
+                             data-jqyoui-options="{revert: 'invalid'}"
+                             ng-model="light.blueLoop"
+                             jqyoui-draggable="{index: {{$index}},placeholder:true,animate:true}">
+                    <span ng-switch="event.type">
+                        <span ng-switch-when="fade">Fade to {{event.endValue}}</span>
+                        <span ng-switch-when="set">Set to {{event.value}}</span>
+                        <span ng-switch-when="strobe">Strobe</span>
+                    </span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr ng-repeat-end></tr>
 
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
+        </table>
+    </div>
     <div ng-if="currentEvent" class="eventEditorBox">
         <div ng-switch="currentEvent.type">
             <ul ng-switch-when="fade">

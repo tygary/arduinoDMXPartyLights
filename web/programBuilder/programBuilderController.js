@@ -1,4 +1,72 @@
 
+/*
+Disco Ball DMX Protocol
+
+Ch1
+0-70    automatic
+71-140  Sound Control
+141-210 DMX512 Control  (CH 2-5)
+211-255 Start DMX (Ch 6)
+
+Ch2
+0-255   Green Light brightness
+
+Ch3
+0-255   Blue Light brightness
+
+Ch4
+0-255   Red Light Brightness
+
+Ch5
+0-255   Rotation Speed adjustment (0->stop)
+
+Ch6
+0-255   Flash Speed adjustment
+
+
+
+Ideas for the Disco control:
+
+Mode selector:
+    Automatic
+    Sound control
+    Manual
+
+
+Manual only:
+
+Color selector
+    Select X-Y axis of colors, translate to RGB values
+
+Rotation control Slider
+
+Strobe Control Slider
+
+
+
+
+Event:
+type: "disco"
+mode: "auto|sound|manual"
+color: hexCode
+rotation: number
+strobe: number
+
+
+
+
+
+
+
+Each Light has a base channel and a type
+
+Types: Dimmer, Discoball, RGBDimmer
+
+
+
+ */
+
+
 
 lightingControllers.controller('programBuilderController', function($scope, $rootScope, $location, dmxService) {
 
@@ -26,6 +94,36 @@ lightingControllers.controller('programBuilderController', function($scope, $roo
         $location.path("/home");
     };
 
+    $scope.lightTypes = [
+        {
+            name: "Dimmer",
+            value: "dimmer"
+        },
+        {
+            name: "Disco Ball",
+            value: "disco"
+        },
+        {
+            name: "RGB Dimmer",
+            value: "rgb"
+        }
+    ];
+
+    $scope.discoModes = [
+        {
+            name: "Auto",
+            value: "auto"
+        },
+        {
+            name: "Sound",
+            value: "sound"
+        },
+        {
+            name: "Manual",
+            value: "manual"
+        }
+    ];
+
     $scope.newEvents = [
         {
             type: "set",
@@ -41,8 +139,31 @@ lightingControllers.controller('programBuilderController', function($scope, $roo
             type: "strobe",
             intervalInBeats: 1,
             durationInBeats: 1
+        },
+        {
+            type: "disco",
+            mode: "",
+            intervalInBeats: 1,
+            durationInBeats: 1
         }
     ];
+
+    $scope.onChangeLightType = function(light) {
+        if (light.type === "disco") {
+            if (!light.mode) {
+                light.mode = "manual";
+            }
+            if (!light.redLoop) {
+                light.redLoop = updateArrayLength([]);
+            }
+            if (!light.greenLoop) {
+                light.greenLoop = updateArrayLength([]);
+            }
+            if (!light.blueLoop) {
+                light.blueLoop = updateArrayLength([]);
+            }
+        }
+    };
 
     $scope.trash = [null];
     $scope.clearTrash = function () {
@@ -53,16 +174,28 @@ lightingControllers.controller('programBuilderController', function($scope, $roo
         if ($scope.config && $scope.config.lights) {
             for(var i=0; i<$scope.config.lights.length; i++) {
                 var light = $scope.config.lights[i];
-                if (light.eventLoop.length > $scope.config.lengthInBeats) {
-                    light.eventLoop.splice($scope.config.lengthInBeats, light.eventLoop.length - $scope.config.lengthInBeats);
-                } else if (light.eventLoop.length < $scope.config.lengthInBeats) {
-                    for (var j=light.eventLoop.length; j< $scope.config.lengthInBeats; j++) {
-                        light.eventLoop[j] = null;
-                    }
+                
+                light.eventLoop = updateArrayLength(light.eventLoop);
+                
+                if (light.type === "disco" && light.mode === "manual") {
+                    light.redLoop = updateArrayLength(light.redLoop);
+                    light.greenLoop = updateArrayLength(light.greenLoop);
+                    light.blueLoop = updateArrayLength(light.blueLoop);
                 }
             }
         }
     };
+    
+    function updateArrayLength(array) {
+        if (array.length > $scope.config.lengthInBeats) {
+            array.splice($scope.config.lengthInBeats, array.length - $scope.config.lengthInBeats);
+        } else if (array.length < $scope.config.lengthInBeats) {
+            for (var j=array.length; j< $scope.config.lengthInBeats; j++) {
+                array[j] = null;
+            }
+        }
+        return array;
+    }
 
     $scope.$watch("config.lengthInBeats", $scope.onChangeLengthInBeats);
 

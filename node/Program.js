@@ -17,6 +17,7 @@ Program.defaultProgram = {
     lights: [
         {
             channel: 1,
+            type: "dimmer",
             eventLoop: [
                 {
                     type: "fade",
@@ -42,7 +43,8 @@ Program.defaultProgram = {
         },
         {
             channel: 2,
-            eventLoop: [
+            type: "disco",
+            redLoop: [
                 {
                     type: "set",
                     value: 255
@@ -63,7 +65,11 @@ Program.defaultProgram = {
                 },
                 null,
                 null
-            ]
+            ],
+            greenLoop: [],
+            blueLoop: [],
+            eventLoop: [],
+            mode: "manual"
         }
     ]
 };

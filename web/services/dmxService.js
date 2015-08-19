@@ -88,6 +88,13 @@ lightingServices.service('dmxService', function($http, $rootScope, $location, $q
         });
     };
 
+    dmxService.setAsDefaultProgram = function (program) {
+        if (!program) {
+            program = $rootScope.currentProgram;
+        }
+        postCommand("setAsDefaultProgram", null, program);
+    }
+
 
     function postCommand(command, params, data, callback) {
         var paramsString = "";

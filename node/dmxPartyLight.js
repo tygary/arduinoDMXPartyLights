@@ -32,7 +32,7 @@ process.on
 
 
         // save log to timestamped logfile
-        var filename = "crash_" + formatDate(new Date) + ".log";
+        var filename = "crash_" + Date.now() + ".log";
         console.log("LOGGING ERROR TO "+filename);
         var fs = require('fs');
         if (!fs.existsSync("/logs")) {
